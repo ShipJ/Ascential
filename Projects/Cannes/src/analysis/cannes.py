@@ -9,4 +9,3 @@ PATH = get_path()
 all = pd.DataFrame(pd.read_csv(PATH+'AllDelegateTrakScanners.csv'))
 red = pd.DataFrame(pd.read_csv(PATH+'AllRedcarpetScanners.csv'))
 
-print all

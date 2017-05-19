@@ -10,9 +10,9 @@ def get_path():
 
     print 'Which project are you interested in:\nCannes: [1]\nSpring Fair: [2]'
     r = raw_input()
-    if r == 1:
+    if r == '1':
         project = 'Cannes'
-    elif r == 2:
+    elif r == '2':
         project = 'SpringAutumnFair'
     else:
         print "Project not recognised, please try again... \n"

@@ -4,8 +4,6 @@ from clean import clean
 import matplotlib.pyplot as plt
 plt.rcParams['figure.facecolor']='white'
 import sys
-from scipy.stats import pearsonr
-import string
 
 a = np.zeros(10)
 

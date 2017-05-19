@@ -8,7 +8,7 @@ def get_path():
     :return:
     """
 
-    print "Which project are you interested in: [Cannes, SpringAutumnFair]"
+    print "Which project are you interested in:\nCannes: [1]\nSpring Fair: [2]"
     project = raw_input()
 
     root_path = os.path.dirname(os.path.abspath(__file__+'../../'))

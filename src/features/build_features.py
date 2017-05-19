@@ -1,1 +1,3 @@
-# added a comment in build features
+from Code.config import config
+
+print config()

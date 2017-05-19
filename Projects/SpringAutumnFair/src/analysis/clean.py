@@ -3,12 +3,18 @@ import numpy as np
 
 
 def clean(df):
+    """
+    Takes a dataframe of salesforce data and maps values to a more usable format, returning a clean data set.
+    
+    :param df: pandas DataFrame containing raw data
+    :return: df: cleaned data set - i.e. mapped to correct values
+    """
 
     # Replace empty and NaN's with None
-    emptyNanMap = {np.nan: None, '': None}
-    df.replace(emptyNanMap, inplace=True)
+    empty_nan_map = {np.nan: None, '': None}
+    df.replace(empty_nan_map, inplace=True)
 
-    # Drop unneeded headers
+    # Drop unwanted headers
     df = pd.DataFrame(df.drop(['RegisteredCompany', 'OpportunityId', 'CreditStatus', 'CompanyTelephone', 'BillingCity',
                                'BillingPostalCode', 'BillingState', 'VATNumber', 'VATNumberValidationStatus', 'Website',
                                'CurrencyIsoCode', 'IsWon', 'InvoiceFrequency', 'LeadChannel', 'LeadSource',

@@ -20,8 +20,8 @@ def get_path():
         get_path()
 
     root_path = os.path.dirname(os.path.abspath(__file__+'../../'))
-    PATH = root_path+'/Projects/%s/Data/' % project
-    if PATH.endswith('Data/'):
+    PATH = root_path+'/Projects/%s/Data' % project
+    if PATH.endswith('/Data'):
         return PATH
     else:
         print 'Path to data source not found. Check documentation for correct structure. \n'

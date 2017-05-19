@@ -1,66 +1,82 @@
 import pandas as pd
 import numpy as np
-from clean import clean
 import matplotlib.pyplot as plt
 plt.rcParams['figure.facecolor']='white'
-import sys
 from Code.config import get_path
-
-PATH = get_path()
-
-a = np.zeros(10)
-
-print a
-sys.exit()
+from clean import clean
 
 
+def sales_by_stand_size(df):
+    """
+    
+    :param df: 
+    :return: 
+    """
 
-# # Run the code below to transform the original standLoc set to a cleaned version
-# headers = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/Ascential/WRC/headers.csv'))
-# standLoc = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/Ascential/WRC/SpringAutumn.txt',
-#                                 sep='\t', names=headers, low_memory=False))
-#
-# clean(standLoc).to_csv('/Users/JackShipway/Desktop/Ascential/WRC/cleanedSpringAutumn.csv', index=None)
-
-
-# data = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/Ascential/WRC/cleanedSpringAutumn.csv', low_memory=False))
-# seasons = {'Spring13': 0, 'Autumn13': 1, 'Spring14': 2, 'Autumn14': 3, 'Spring15': 4, 'Autumn15': 5, 'Spring16': 6,
-#            'Autumn16': 7, 'Spring17': 8, 'Autumn17': 9, 'Spring18': 10}
-# data['Exhibition'].replace(seasons, inplace=True)
-# seasonOrd = [idx for idx, val in sorted(seasons.items(), key=lambda x: x[1])]
-
-
-# ''' Sales by stand size '''
-# a = pd.DataFrame(data.groupby(['Company', 'Exhibition'])['NetArea'].first().reset_index())
-# b = pd.DataFrame(data.groupby(['Company', 'Exhibition'])['ProductPrice'].sum().reset_index())
-# a['Sales'] = b['ProductPrice']
-#
-# a = a[(a['Sales'] > 0) & (a['Sales'] < 1000000)]
-# a = a[(a['NetArea'] > 0) & (a['NetArea'] < 1000)]
-#
-# identified_small = a[(a['NetArea'] < 100) & (a['Sales'] > 50000)]['Company']
-# identified_big = a[((a['NetArea'] > 100) & (a['NetArea'] < 150))]
-# identified_big = identified_big[(identified_big['Sales'] > 10000) & (identified_big['Sales'] < 15000)]['Company']
+    # ''' Sales by stand size '''
+    # a = pd.DataFrame(data.groupby(['Company', 'Exhibition'])['NetArea'].first().reset_index())
+    # b = pd.DataFrame(data.groupby(['Company', 'Exhibition'])['ProductPrice'].sum().reset_index())
+    # a['Sales'] = b['ProductPrice']
+    #
+    # a = a[(a['Sales'] > 0) & (a['Sales'] < 1000000)]
+    # a = a[(a['NetArea'] > 0) & (a['NetArea'] < 1000)]
+    #
+    # identified_small = a[(a['NetArea'] < 100) & (a['Sales'] > 50000)]['Company']
+    # identified_big = a[((a['NetArea'] > 100) & (a['NetArea'] < 150))]
+    # identified_big = identified_big[(identified_big['Sales'] > 10000) & (identified_big['Sales'] < 15000)]['Company']
 
 
-# Companies with small area but high spend
-# smallBigSpend = data[data['Company'].isin(list(pd.unique(identified_small)))]
-# z = pd.DataFrame(smallBigSpend.groupby(['Exhibition', 'ExhibitorType'])['Company'].count().reset_index())
-# z.to_csv('/Users/JackShipway/Desktop/smallBigSpend.csv', index=None)
+    # Companies with small area but high spend
+    # smallBigSpend = data[data['Company'].isin(list(pd.unique(identified_small)))]
+    # z = pd.DataFrame(smallBigSpend.groupby(['Exhibition', 'ExhibitorType'])['Company'].count().reset_index())
+    # z.to_csv('/Users/JackShipway/Desktop/smallBigSpend.csv', index=None)
 
-# bigSmallSpend = data[data['Company'].isin(list(pd.unique(identified_big)))]
-# y = pd.DataFrame(smallBigSpend.groupby(['Exhibition', 'ExhibitorType'])['Company'].count().reset_index())
-# y.to_csv('/Users/JackShipway/Desktop/bigSmallSpend.csv', index=None)
+    # bigSmallSpend = data[data['Company'].isin(list(pd.unique(identified_big)))]
+    # y = pd.DataFrame(smallBigSpend.groupby(['Exhibition', 'ExhibitorType'])['Company'].count().reset_index())
+    # y.to_csv('/Users/JackShipway/Desktop/bigSmallSpend.csv', index=None)
 
 
-# highPerform = pd.DataFrame(data[data['Company'].isin(list(pd.unique(smallBigSpend['Company'])))])
-# lowPerform = pd.DataFrame(data[data['Company'].isin(list(pd.unique(bigSmallSpend['Company'])))])
+    # highPerform = pd.DataFrame(data[data['Company'].isin(list(pd.unique(smallBigSpend['Company'])))])
+    # lowPerform = pd.DataFrame(data[data['Company'].isin(list(pd.unique(bigSmallSpend['Company'])))])
 
-# print highPerform.groupby(['Exhibition', 'Company'])['CompanySectors'].first().reset_index()
-# print lowPerform.groupby(['Exhibition', 'Company'])['CompanySectors'].first().reset_index()
+    # print highPerform.groupby(['Exhibition', 'Company'])['CompanySectors'].first().reset_index()
+    # print lowPerform.groupby(['Exhibition', 'Company'])['CompanySectors'].first().reset_index()
 
-# highPerformSectors = ['Contemporary', 'Accessories', 'Luggage', 'Home', 'Dining', 'Government' 'Independent', 'DIY']
-# lowPerformSectors = ['Retail, Toys, Gadgets']
+    # highPerformSectors = ['Contemporary', 'Accessories', 'Luggage', 'Home', 'Dining', 'Government' 'Independent', 'DIY']
+    # lowPerformSectors = ['Retail, Toys, Gadgets']
+
+
+
+
+
+if __name__ == '__main__':
+
+    # Get path to data
+    PATH = get_path()
+
+    # # Grab raw data
+    # headers = pd.DataFrame(pd.read_csv(PATH+'/Raw/headers.csv'))
+    # data = pd.DataFrame(pd.read_csv(PATH+'/Raw/Spring_Autumn.txt', sep='\t', names=headers, low_memory=False))
+    # # Clean data and store in csv
+    # clean(data).to_csv(PATH+'/Processed/cleanedSpringAutumn.csv', index=None)
+
+    # Grab processed data
+    data = pd.DataFrame(pd.read_csv(PATH+'/Processed/cleanedSpringAutumn.csv', low_memory=False))
+
+    # For x-axis in plots
+    seasons = {'Spring13': 0, 'Autumn13': 1, 'Spring14': 2, 'Autumn14': 3, 'Spring15': 4, 'Autumn15': 5, 'Spring16': 6,
+               'Autumn16': 7, 'Spring17': 8, 'Autumn17': 9, 'Spring18': 10}
+    data['Exhibition'].replace(seasons, inplace=True)
+    seasonOrd = [idx for idx, val in sorted(seasons.items(), key=lambda x: x[1])]
+
+
+    # Individual analyses
+
+
+
+
+
+
 
 
 

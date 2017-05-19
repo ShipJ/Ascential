@@ -4,6 +4,9 @@ from clean import clean
 import matplotlib.pyplot as plt
 plt.rcParams['figure.facecolor']='white'
 import sys
+from Code.config import get_path
+
+PATH = get_path()
 
 a = np.zeros(10)
 

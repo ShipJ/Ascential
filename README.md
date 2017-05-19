@@ -3,9 +3,12 @@ Ascential
 
 
 1. Clone repo into a local directory called 'Ascential', alongside a subdirectory called 'Projects'.
-2. 'Projects' should contain all related documents, and a path to whatever data source(s) is relevant.
-3. Allows you to simultaneously work on multiple projects with multiple data sources in the same place.
-4. Can commit to GitHub without worrying about transferring data - anything outside 'Code' is invisible.
+2. 'Projects' should contain directories such as 'Cannes', or 'SpringAutumnFair'.
+3. Individual projects should hold reports, powerpoints, but also a directory called 'Data'
+4. 'Data' should contain a 'Raw', 'Interim', and 'Processed' directory.
+5. Raw should never be changed physically. Interim contains cleaned data etc. Processed is transformed/analysable.
+6. Allows you to simultaneously work on multiple projects with multiple data sources in the same place.
+7. Can commit to GitHub without worrying about transferring data - anything outside 'Code' is invisible.
 
 
 Project Organization

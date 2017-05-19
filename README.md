@@ -1,7 +1,12 @@
 Ascential
 ==============================
 
-Ongoing Projects
+
+1. Clone repo into a local directory called 'Ascential', alongside a subdirectory called 'Projects'.
+2. 'Projects' should contain all related documents, and a path to whatever data source(s) is relevant.
+3. Allows you to simultaneously work on multiple projects with multiple data sources in the same place.
+4. Can commit to GitHub without worrying about transferring data - anything outside 'Code' is invisible.
+
 
 Project Organization
 ------------
@@ -32,7 +37,7 @@ Project Organization
     │   │   └── make_dataset.py
     │   │
     │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
+    │   │   └── analysis.py
     │   │
     │   ├── models         <- Scripts to train models and then use trained models to make
     │   │   │                 predictions

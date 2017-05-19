@@ -6,5 +6,5 @@ PATH = get_path()
 
 
 ''' Grab Data '''
-all = pd.DataFrame(pd.read_csv(PATH+'/Cannes/Data/AllDelegateTrakScanners.csv'))
-red = pd.DataFrame(pd.read_csv(PATH+'/Cannes/Data/AllRedcarpetScanners.csv'))
+all = pd.DataFrame(pd.read_csv(PATH+'/AllDelegateTrakScanners.csv'))
+red = pd.DataFrame(pd.read_csv(PATH+'/AllRedcarpetScanners.csv'))

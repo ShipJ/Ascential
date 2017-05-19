@@ -9,4 +9,3 @@ PATH = get_path()
 all = pd.DataFrame(pd.read_csv(PATH+'/Cannes/Data/AllDelegateTrakScanners.csv'))
 red = pd.DataFrame(pd.read_csv(PATH+'/Cannes/Data/AllRedcarpetScanners.csv'))
 
-

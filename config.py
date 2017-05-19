@@ -8,8 +8,16 @@ def get_path():
     :return:
     """
 
-    print "Which project are you interested in:\nCannes: [1]\nSpring Fair: [2]"
-    project = raw_input()
+    print 'Which project are you interested in:\nCannes: [1]\nSpring Fair: [2]'
+    r = raw_input()
+    if r == 1:
+        project = 'Cannes'
+    elif r == 2:
+        project = 'SpringAutumnFair'
+    else:
+        print "Project not recognised, please try again... \n"
+        project = ''
+        get_path()
 
     root_path = os.path.dirname(os.path.abspath(__file__+'../../'))
     PATH = root_path+'/Projects/%s/Data/' % project

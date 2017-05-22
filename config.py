@@ -8,7 +8,7 @@ def get_path():
     :return:
     """
 
-    print 'Which project are you interested in:\nCannes: [1]\nSpring Fair: [2]'
+    print 'Which data do you want?:\nCannes: [1]\nSpring Fair: [2]'
     r = raw_input()
     if r == '1':
         project = 'Cannes'

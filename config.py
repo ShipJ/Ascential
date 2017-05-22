@@ -9,7 +9,7 @@ def get_path():
     :return:
     """
 
-    print 'Which data do you want?:\nCannes: [1]\nSpring Fair: [2]'
+    print 'Which data do you want?:\nCannes: [1]\nSpring Fair: [2]\nWiFi: [3]\nBLE: [4]\n'
     r = raw_input()
     if r == '1':
         project = 'Cannes'

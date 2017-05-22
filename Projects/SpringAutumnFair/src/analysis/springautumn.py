@@ -13,40 +13,70 @@ def sales_by_stand_size(df):
     :return: 
     """
 
-    # ''' Sales by stand size '''
-    # a = pd.DataFrame(data.groupby(['Company', 'Exhibition'])['NetArea'].first().reset_index())
-    # b = pd.DataFrame(data.groupby(['Company', 'Exhibition'])['ProductPrice'].sum().reset_index())
-    # a['Sales'] = b['ProductPrice']
-    #
-    # a = a[(a['Sales'] > 0) & (a['Sales'] < 1000000)]
-    # a = a[(a['NetArea'] > 0) & (a['NetArea'] < 1000)]
-    #
-    # identified_small = a[(a['NetArea'] < 100) & (a['Sales'] > 50000)]['Company']
-    # identified_big = a[((a['NetArea'] > 100) & (a['NetArea'] < 150))]
-    # identified_big = identified_big[(identified_big['Sales'] > 10000) & (identified_big['Sales'] < 15000)]['Company']
+    ''' Sales by stand size: Could use net/gross/chargeable area (noticeable difference?) '''
+    area_by_co = pd.DataFrame(df.groupby(['Company', 'Exhibition'])['NetArea'].first().reset_index())
+    sales_by_co = pd.DataFrame(df.groupby(['Company', 'Exhibition'])['ProductPrice'].sum().reset_index())
+    area_by_co['Sales'] = sales_by_co['ProductPrice']
 
+    area_by_co = area_by_co[(area_by_co['Sales'] > 0) & (area_by_co['Sales'] < 1000000)]
+    area_by_co = area_by_co[(area_by_co['NetArea'] > 0) & (area_by_co['NetArea'] < 1000)]
+
+    identified_small = a[(a['NetArea'] < 100) & (a['Sales'] > 50000)]['Company']
+    identified_big = a[((a['NetArea'] > 100) & (a['NetArea'] < 150))]
+    identified_big = identified_big[(identified_big['Sales'] > 10000) & (identified_big['Sales'] < 15000)]['Company']
 
     # Companies with small area but high spend
-    # smallBigSpend = data[data['Company'].isin(list(pd.unique(identified_small)))]
-    # z = pd.DataFrame(smallBigSpend.groupby(['Exhibition', 'ExhibitorType'])['Company'].count().reset_index())
-    # z.to_csv('/Users/JackShipway/Desktop/smallBigSpend.csv', index=None)
+    smallBigSpend = df[df['Company'].isin(list(pd.unique(identified_small)))]
+    z = pd.DataFrame(smallBigSpend.groupby(['Exhibition', 'ExhibitorType'])['Company'].count().reset_index())
+    z.to_csv('/Users/JackShipway/Desktop/smallBigSpend.csv', index=None)
 
-    # bigSmallSpend = data[data['Company'].isin(list(pd.unique(identified_big)))]
-    # y = pd.DataFrame(smallBigSpend.groupby(['Exhibition', 'ExhibitorType'])['Company'].count().reset_index())
-    # y.to_csv('/Users/JackShipway/Desktop/bigSmallSpend.csv', index=None)
-
-
-    # highPerform = pd.DataFrame(data[data['Company'].isin(list(pd.unique(smallBigSpend['Company'])))])
-    # lowPerform = pd.DataFrame(data[data['Company'].isin(list(pd.unique(bigSmallSpend['Company'])))])
-
-    # print highPerform.groupby(['Exhibition', 'Company'])['CompanySectors'].first().reset_index()
-    # print lowPerform.groupby(['Exhibition', 'Company'])['CompanySectors'].first().reset_index()
-
-    # highPerformSectors = ['Contemporary', 'Accessories', 'Luggage', 'Home', 'Dining', 'Government' 'Independent', 'DIY']
-    # lowPerformSectors = ['Retail, Toys, Gadgets']
+    bigSmallSpend = data[data['Company'].isin(list(pd.unique(identified_big)))]
+    y = pd.DataFrame(smallBigSpend.groupby(['Exhibition', 'ExhibitorType'])['Company'].count().reset_index())
+    y.to_csv('/Users/JackShipway/Desktop/bigSmallSpend.csv', index=None)
 
 
+    highPerform = pd.DataFrame(data[data['Company'].isin(list(pd.unique(smallBigSpend['Company'])))])
+    lowPerform = pd.DataFrame(data[data['Company'].isin(list(pd.unique(bigSmallSpend['Company'])))])
 
+    highPerform = pd.DataFrame(highPerform.groupby(['Exhibition'])['StandLocationType'].first().reset_index())
+    lowPerform = pd.DataFrame(lowPerform.groupby(['Exhibition'])['StandLocationType'].first().reset_index())
+
+    return highPerform, lowPerform
+
+
+def sales_by_exhibition(df):
+    exhibition = pd.DataFrame(df.groupby(['Exhibition', 'Company'])['ProductPrice'].sum().reset_index())
+    mean_spend = exhibition.groupby(['Exhibition'])['ProductPrice'].mean().reset_index()
+    exhibition = pd.DataFrame(exhibition.groupby('Exhibition')['Company'].count().reset_index())
+    exhibition['MeanSpend'] = mean_spend['ProductPrice']
+    return exhibition
+
+def sales_by_exhibitor_type(df):
+    ex_type = df.groupby(['Exhibition', 'Company'])['StandType'].first().reset_index()
+    ex_type_sales = df.groupby(['Exhibition', 'Company'])['ProductPrice'].sum().reset_index()
+    ex_type['Sales'] = ex_type_sales['ProductPrice']
+    ex_type = ex_type.dropna()
+    return pd.DataFrame(ex_type.groupby(['Exhibition', 'StandType'])['Sales'].sum().reset_index())
+
+def sales_by_firm_objective(df):
+    firm_objectives = df[~df['MainCustomerObjectives'].isnull()]
+    return pd.DataFrame(firm_objectives.groupby('MainCustomerObjectives')['ProductPrice'].sum().reset_index())
+
+def sales_by_hall(df):
+    hall = df.groupby(['Exhibition', 'Company'])['Hall'].first().reset_index()
+    hall_sales = df.groupby(['Exhibition', 'Company'])['ProductPrice'].sum().reset_index()
+    hall['Sales'] = hall_sales['ProductPrice']
+    hall = hall.dropna()
+    sales_by_type = hall.groupby(['Exhibition', 'Hall'])['Sales'].sum().reset_index()
+    sales_by_hall_by_exhibition = pd.DataFrame(sales_by_type.groupby(['Exhibition', 'Hall'])['Sales'].sum().reset_index())
+    total_sales_by_hall = pd.DataFrame(sales_by_type.groupby('Hall')['Sales'].sum().reset_index())
+    return sales_by_hall_by_exhibition, total_sales_by_hall
+
+
+def unique_co(df):
+    unique = pd.DataFrame(df.groupby(['Exhibition', 'Company'])['ProductPrice'].sum().reset_index())
+    unique_by_exhibition = pd.DataFrame(unique.groupby('Exhibition')['Company'].count().reset_index())
+    return unique_by_exhibition
 
 
 if __name__ == '__main__':
@@ -63,99 +93,29 @@ if __name__ == '__main__':
     # Grab processed data
     data = pd.DataFrame(pd.read_csv(PATH+'/Processed/cleanedSpringAutumn.csv', low_memory=False))
 
-    # For x-axis in plots
-    seasons = {'Spring13': 0, 'Autumn13': 1, 'Spring14': 2, 'Autumn14': 3, 'Spring15': 4, 'Autumn15': 5, 'Spring16': 6,
-               'Autumn16': 7, 'Spring17': 8, 'Autumn17': 9, 'Spring18': 10}
-    data['Exhibition'].replace(seasons, inplace=True)
-    seasonOrd = [idx for idx, val in sorted(seasons.items(), key=lambda x: x[1])]
 
+    ''' Individual Analyses '''
 
-    # Individual analyses
+    # Number of unique co's by exhibition
+    unique_co(data).to_csv('/Processed/uniqueCo.csv', index=None)
 
+    # Sales by exhibition
+    sales_by_exhibition(data).to_csv(PATH+'/Processed/sales_by_exhibition.csv', index=None)
 
+    # Sales by stand size
+    sales_by_stand_size(data)[0].to_csv(PATH+'/Processed/high_perform.csv', index=None)
+    sales_by_stand_size(data)[1].to_csv(PATH+'/Processed/low_perform.csv', index=None)
+    
+    # Sales by exhibitor type
+    sales_by_exhibitor_type(data).to_csv(PATH+'/Processed/sales_by_ex_type.csv', index=None)
+    
+    # Sales by firm objectives
+    sales_by_firm_objective(data).to_csv(PATH+'/Processed/salesByFirmObjective.csv', index=None)
+    
+    # Sales by Hall
+    sales_by_hall(data)[0].to_csv(PATH+'/Processed/exhibition_sales_by_hall.csv', index=None)
+    sales_by_hall(data)[1].to_csv(PATH+'/Processed/total_sales_by_hall.csv', index=None)
 
-
-
-
-
-
-
-
-
-
-# highPerform = highPerform.groupby(['Exhibition'])['StandLocationType'].first().reset_index()
-# lowPerform = lowPerform.groupby(['Exhibition'])['StandLocationType'].first().reset_index()
-
-
-
-
-
-# for i in range(11):
-#     j = a[a['Exhibition'] == i]
-#     plt.scatter(j['NetArea'], j['Sales'])
-#     plt.grid(), plt.xlabel('Net Area (m^2)'), plt.ylabel('Sales (GBP)')
-#     plt.show()
-#     print pearsonr(j['NetArea'], j['Sales'])
-
-
-
-#
-# c = pd.DataFrame(a.groupby('Exhibition')['NetArea'].mean().reset_index())
-# c['Sales'] = pd.DataFrame(a.groupby('Exhibition')['Sales'].sum().reset_index())['Sales']
-#
-# c.to_csv('/Users/JackShipway/Desktop/salesStandArea.csv', index=None)
-
-
-
-
-#
-#
-#
-# a = pd.DataFrame(data.groupby(['Exhibition', 'Company'])['ProductPrice'].sum().reset_index())
-# b = pd.DataFrame(a.groupby('Exhibition')['Company'].count().reset_index())
-#
-# b.to_csv('/Users/JackShipway/Desktop/uniqueCo.csv', index=None)
-#
-#
-#
-#
-#
-#
-
-# sys.exit()
-
-
-''' 4. SALES BY EXHIBITION '''
-expo = pd.DataFrame(data.groupby(['Exhibition'])['ProductPrice'].sum().reset_index())
-a = pd.DataFrame(data.groupby(['Exhibition', 'Company'])['ProductPrice'].sum().reset_index())
-b = a.groupby(['Exhibition'])['ProductPrice'].mean().reset_index()
-a = pd.DataFrame(a.groupby('Exhibition')['Company'].count().reset_index())
-a['AverageSpend'] = b['ProductPrice']
-
-a.to_csv('/Users/JackShipway/Desktop/avgSpendNumCos.csv', index=None)
-
-
-
-# expo['Expo'] = seasonOrd
-#
-# print expo
-
-
-
-#
-# expo.to_csv('/Users/JackShipway/Desktop/salesByExpo.csv', index=None)
-#
-# plt.plot(range(0, 11, 2),
-#          np.divide(expo[expo['Exhibition'] % 2 == 0]['ProductPrice'], 1000000), '-x',
-#          label='Spring') #spring
-# plt.plot(range(1, 10, 2),
-#          np.divide(expo[expo['Exhibition'] % 2 != 0]['ProductPrice'], 1000000), '-x', c='red',
-#          label='Autumn') #autumn
-# plt.grid(), plt.legend(), plt.xlim([-0.5,10.5])
-# plt.xlabel('Exhibition', fontsize=18), plt.ylabel('Total Spent (m)', fontsize=18)
-# plt.xticks(range(len(expo)), seasonOrd, rotation='horizontal')
-# plt.show()
-# sys.exit()
 
 
 ''' SALES BY COUNTRY/CONTINENT '''
@@ -171,12 +131,7 @@ a.to_csv('/Users/JackShipway/Desktop/avgSpendNumCos.csv', index=None)
 # salesByCountry = salesByCountry.drop('BillingCountry', axis=1)
 # spendByCountry = pd.DataFrame(salesByCountry.groupby('Country')['ProductPrice'].sum().reset_index())
 # spendByCountry.to_csv('/Users/JackShipway/Desktop/Ascential/WRC/spendByCountry.csv', index=None)
-# plt.scatter(range(len(spendByCountry)), spendByCountry['ProductPrice']), plt.grid()
-# plt.xlim([0, 100])
-# plt.xlabel('Country', fontsize=18), plt.ylabel('Total Spent', fontsize=18)
-# plt.xticks(range(len(spendByCountry)), spendByCountry['Country'], rotation='vertical')
-# plt.show()
-# sys.exit()
+
 
 ''' SALES BY COMPANY SECTOR '''
 
@@ -250,57 +205,17 @@ a.to_csv('/Users/JackShipway/Desktop/avgSpendNumCos.csv', index=None)
 # plt.show()
 
 
-''' 8.2: Sales by Hall '''
-# hall = data.groupby(['Exhibition', 'Company'])['Hall'].first().reset_index()
-# hallSales = data.groupby(['Exhibition', 'Company'])['ProductPrice'].sum().reset_index()
-# hall['Sales'] = hallSales['ProductPrice']
-# hall = hall.dropna()
-# hallSalesByType = hall.groupby(['Exhibition', 'Hall'])['Sales'].sum().reset_index()
-# hallSalesByType = hallSalesByType[hallSalesByType['Hall'] != '10-Dec']
-#
-#
-# expoSalesByHall = pd.DataFrame(hallSalesByType.groupby(['Exhibition', 'Hall'])['Sales'].sum().reset_index())
-# totalSalesByHall = pd.DataFrame(hallSalesByType.groupby('Hall')['Sales'].sum().reset_index())
-#
-# expoSalesByHall.to_csv('/Users/JackShipway/Desktop/expoSalesByHall.csv', index=None)
-# totalSalesByHall.to_csv('/Users/JackShipway/Desktop/totalSalesByHall.csv', index=None)
-
-
-# plt.bar(range(len(totalSalesByHall)), totalSalesByHall['Sales'])
-# plt.show()
-
-# plt.plot(range(0, 11, 2), hallSalesByType[hallSalesByType['Exhibition'] % 2 == 0]['Sales'], '-x',
-#          label='Spring') #spring
-# plt.plot(range(1, 10, 2), hallSalesByType[hallSalesByType['Exhibition'] % 2 != 0]['Sales'], '-x', c='red',
-#          label='Autumn') #autumn
-# plt.grid(), plt.legend(), plt.xlim([-0.5,10.5])
-# plt.xlabel('Exhibition', fontsize=18), plt.ylabel('Mean days to closure', fontsize=18)
-# plt.xticks(range(len(hallSalesByType)), seasonOrd, rotation='horizontal')
-# plt.show()
 
 
 
-''' 8.3: Sales by exhibitor type '''
-# exType = data.groupby(['Exhibition', 'Company'])['StandType'].first().reset_index()
-# exTypeSales = data.groupby(['Exhibition', 'Company'])['ProductPrice'].sum().reset_index()
-# exType['Sales'] = exTypeSales['ProductPrice']
-# exType = exType.dropna()
-# SalesByExType = pd.DataFrame(exType.groupby(['Exhibition', 'StandType'])['Sales'].sum().reset_index())
-# SalesByExType.to_csv('/Users/JackShipway/Desktop/salesByExhibitorType.csv', index=None)
 
 
 
-''' 9. Firm objectives: groupings/trend analysis? '''
-# firmObjectives = data[~data['MainCustomerObjectives'].isnull()]
-# salesByFirmObjective = pd.DataFrame(firmObjectives.groupby('MainCustomerObjectives')['ProductPrice'].sum().reset_index())
-# salesByFirmObjective.to_csv('/Users/JackShipway/Desktop/salesByFirmObjective.csv', index=None)
 
 
-#
-# plt.bar(range(11), np.divide(salesByFirmObjective['ProductPrice'], 1000000))
-# plt.xticks(range(11), salesByFirmObjective['MainCustomerObjectives'] , rotation='vertical')
-# plt.grid(), plt.xlabel('Customer Objective'), plt.ylabel('Total Spend (m)')
-# plt.show()
+
+
+
 
 
 

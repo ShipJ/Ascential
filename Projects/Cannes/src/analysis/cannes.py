@@ -5,9 +5,9 @@ from Code.config import get_path
 PATH = get_path()
 
 
-''' Grab Data '''
+''' Grab raw data '''
 all = pd.DataFrame(pd.read_csv(PATH+'/Raw/AllDelegateTrakScanners.csv'))
 red = pd.DataFrame(pd.read_csv(PATH+'/Raw/AllRedcarpetScanners.csv'))
 
 
-print all
+

@@ -1,5 +1,6 @@
 import os
 
+
 def get_path():
     """
     This simple function returns the path to the data directory, which sits

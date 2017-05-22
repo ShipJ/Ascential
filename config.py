@@ -9,12 +9,23 @@ def get_path():
     :return:
     """
 
-    print 'Which data do you want?:\nCannes: [1]\nSpring Fair: [2]\nWiFi: [3]\nBLE: [4]\n'
-    r = raw_input()
-    if r == '1':
+    print 'Which data do you want?:\nCannes: [1]\nSpring Fair: [2]\nTracking: [3]\n'
+    source = raw_input()
+    if source == '1':
         project = 'Cannes'
-    elif r == '2':
+    elif source == '2':
         project = 'SpringAutumnFair'
+    elif source == '3':
+        print 'Which tracking data?:\nWiFi: [1]\nBLE: [2]\n'
+        wifi_or_ble = raw_input()
+        if wifi_or_ble == '1':
+            project = 'Tracking/WiFi'
+        elif wifi_or_ble == '2':
+            project = 'Tracking/BLE'
+        else:
+            print "Project not recognised, please try again... \n"
+            project = ''
+            get_path()
     else:
         print "Project not recognised, please try again... \n"
         project = ''

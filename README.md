@@ -8,7 +8,7 @@ Ascential
 4. 'Data' should contain a 'Raw', 'Interim', and 'Processed' directory.
 5. Raw should never be changed physically. Interim contains cleaned data etc. Processed is transformed/analysable.
 6. Allows you to simultaneously work on multiple projects with multiple data sources in the same place.
-7. Can commit to GitHub without worrying about transferring data - anything outside 'Code' is invisible.
+7. Can commit to GitHub without worrying about transferring data - any files called 'data' in 'Code' are invisible.
 
 
 Project Organization

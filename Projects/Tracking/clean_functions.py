@@ -30,3 +30,8 @@ def clean_ble(PATH, df):
     # Map datetime strings to datetime
     df['datetime'] = pd.to_datetime(df['datetime'])
     return df
+
+
+def rssi_to_metres(df):
+    df['metres'] = 10 ** ((df['power'] - df['rssi']) / 20.0)
+    return df

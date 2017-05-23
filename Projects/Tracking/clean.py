@@ -1,10 +1,7 @@
 import pandas as pd
-from Code.config import get_path
 
 
-def clean_ble(df):
-
-    PATH = get_path()
+def clean_ble(PATH, df):
 
     # Remove unwanted columns
     df = df.drop(['clientmac', 'proximity', 'type', 'probetime_gmt', 'probetime'], axis=1)

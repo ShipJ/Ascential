@@ -27,8 +27,8 @@ def clean_ble(PATH, df):
     # Map Sensors to enumerated
     map_sensors = {sensor: i for i, sensor in enumerate(set(df['sensor']))}
     df['sensor'] = df['sensor'].map(map_sensors)
-    # Map datetime strings to datetime
-    df['datetime'] = pd.to_datetime(df['datetime'])
+    # Map datetime strings to datetime - chop off seconds: eg. 12:00:15 => 12:00:00
+    df['datetime'] = pd.to_datetime(df['datetime']).map(lambda x: x.replace(second=0))
     return df
 
 

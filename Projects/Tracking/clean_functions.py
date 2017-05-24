@@ -28,8 +28,8 @@ def clean_ble(PATH, df):
     # Map Sensors to enumerated
     map_sensors = {sensor: i for i, sensor in enumerate(set(df['sensor']))}
     df['sensor'] = df['sensor'].map(map_sensors)
-    # Map datetime strings to datetime - chop off seconds: eg. 12:00:15 => 12:00:00
-    df['datetime'] = pd.to_datetime(df['datetime']) #.map(lambda x: x.replace(second=0))
+    # Map datetime strings to datetime # map(lambda x: x.replace(second=0))
+    df['datetime'] = pd.to_datetime(df['datetime'])
     return df
 
 
@@ -45,8 +45,8 @@ def identify_pairs(df):
         next_time, next_sensor = df['datetime'][i+1], df['sensor'][i+1]
         if (next_time-start_time).seconds < 30:
             if next_sensor != start_sensor:
-                pairs.append([0, start_time, start_sensor, df['proximity'][i], df['metres'][i]])
-                pairs.append([0, next_time, next_sensor, df['proximity'][i+1], df['metres'][i+1]])
+                pairs.append(np.array(df.loc[i]))
+                pairs.append(np.array(df.loc[i+1]))
         start_time, start_sensor = next_time, next_sensor
     return np.array(pairs)
 

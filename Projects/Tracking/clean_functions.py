@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import sys
 
 
 def clean_ble(PATH, df):
@@ -34,7 +35,13 @@ def clean_ble(PATH, df):
 
 
 def rssi_to_metres(df):
-    df['metres'] = 10 ** ((df['power'] - df['rssi']) / 20.0)
+    # Original, simple function
+    # df['metres1'] = 10 ** ((df['power'] - df['rssi']) / 20.0)
+
+    # More complex, non-linear function
+    df['ratio'] = np.where(df['rssi'] >= 0, None, df.rssi*(1.0/df.power)) # Ignore runtime warnings
+    df['metres'] = np.where(df['ratio'] < 1, np.power(df['ratio'], 10), (0.89976)*np.power(df['ratio'], 7.7095) + 0.111)
+    df = df.drop('ratio', axis=1)
     return df
 
 

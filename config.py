@@ -1,6 +1,10 @@
 import os
 
 
+def get_pwd():
+    return 'EvMs8900'
+
+
 def get_path():
     """
     This simple function returns the path to the data directory, which sits

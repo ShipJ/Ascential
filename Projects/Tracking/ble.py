@@ -28,7 +28,7 @@ sensor_coords = sensor_coords[sensor_coords['id_location'].isin(pd.unique(ble['i
 name_loc = ble[['sensor', 'id_location']].drop_duplicates().sort_values('sensor').reset_index(drop=True)
 sensor_coords = name_loc.merge(sensor_coords, on='id_location', how='inner')
 
-tile_size = 5
+tile_size = 10
 
 class Rectangle:
     def __init__(self, tl, br):
@@ -41,6 +41,12 @@ class Point:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+def smart(start, all, x, y):
+    a = []
+    for i in all:
+        a.append(abs(np.floor(i/x)-np.floor(start/x))+abs(np.floor(i/y)-np.floor(start/y)))
+    return all[np.argmin(a)]
 
 
 tiles = []
@@ -58,7 +64,9 @@ def circum_points(r, y, z, n):
 def points_to_tiles(points):
     possible_tiles = []
     for point in points:
-        possible_tiles.append(int((1000./tile_size)*math.floor(point.x/float(tile_size))+math.floor(point.y/float(tile_size))))
+        possible_tiles.append(int((float(Y_MAX)/tile_size)*math.floor(point.x/float(tile_size))
+                                  +
+                                  math.floor(point.y/float(tile_size))))
     return possible_tiles
 
 
@@ -69,9 +77,10 @@ def drop_old(old_timefame):
     new_timeframe = old_timefame.loc[mask]
     return pd.DataFrame(new_timeframe)
 
-journeys = []
-journey = pd.DataFrame()
-start_point = [Point(0, 0)]
+journeys_rand, journeys_smart = [], []
+journey_rand, journey_smart = pd.DataFrame(), pd.DataFrame()
+
+start_loc = 0
 start = ble.iloc[0].datetime
 data_timestamp = pd.DataFrame()
 
@@ -83,12 +92,14 @@ for i in range(len(ble)):
     signal = ble.iloc[i]
 
     if (signal.datetime - start).seconds > 600:
-        if j == 5:
+        if j == 1:
             break
         j+=1
         print 'NEW JOURNEY'
-        journeys.append(journey)
-        journey = pd.DataFrame()
+        journeys_rand.append(journey_rand)
+        journey_rand = pd.DataFrame()
+        journeys_smart.append(journey_smart)
+        journey_smart = pd.DataFrame()
 
     # Add new signal
     data_timestamp = data_timestamp.append({'sensor': signal.sensor,
@@ -107,31 +118,34 @@ for i in range(len(ble)):
 
         points = circum_points(np.array(mean_dist[mean_dist['sensor'] == int(sensor)].metres)[0],
                             np.array(sensor_coords[sensor_coords['sensor'] == int(sensor)].x)[0],
-                            np.array(sensor_coords[sensor_coords['sensor'] == int(sensor)].y)[0],
-                            20)
+                            np.array(sensor_coords[sensor_coords['sensor'] == int(sensor)].y)[0], 20)
         points = pd.unique(points_to_tiles([Point(i[0], i[1]) for i in points]))
 
         all = np.union1d(all, points)
 
     # Random
     rand_tile = tiles[int(choice(all))]
-    # Uncomment above, change to closest
+    # More intelligent - using previous closest
+    start_loc = int(smart(start_loc, all, 10, 30))
+    smart_tile = tiles[start_loc]
 
-
-
-
-
-    journey = journey.append({'x':rand_tile.centre().x, 'y': rand_tile.centre().y}, ignore_index=True)
+    journey_rand = journey_rand.append({'x':rand_tile.centre().x, 'y': rand_tile.centre().y}, ignore_index=True)
+    journey_smart = journey_smart.append({'x':smart_tile.centre().x, 'y': smart_tile.centre().y}, ignore_index=True)
 
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
-c = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w','b', 'g', 'r', 'c', 'm', 'y', 'k', 'w','b', 'g', 'r', 'c', 'm', 'y',
-     'k', 'w', 'b', 'g', 'r', 'c', 'm', 'y', 'k', 'w', 'b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+c = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w', 'b', 'g', 'r', 'c',
+     'b', 'g', 'r', 'c', 'm', 'y', 'k', 'w', 'b', 'g', 'r', 'c',
+     'b', 'g', 'r', 'c', 'm', 'y', 'k', 'w', 'b', 'g', 'r', 'c',
+     'b', 'g', 'r', 'c', 'm', 'y', 'k', 'w', 'b', 'g', 'r', 'c',
+     'b', 'g', 'r', 'c', 'm', 'y', 'k', 'w', 'b', 'g', 'r', 'c',
+     'b', 'g', 'r', 'c', 'm', 'y', 'k', 'w', 'b', 'g', 'r', 'c']
 
-for i in range(len(journeys)):
-    plt.plot(journeys[i]['x'], journeys[i]['y'], c=c[i], marker='>', label='Journey: %s' % i)
+for i in range(len(journeys_rand)):
+    # plt.plot(journeys_rand[i]['x'], journeys_rand[i]['y'], c=c[i], marker='>', label='Journey: %s' % i)
+    plt.plot(journeys_smart[i]['x'], journeys_smart[i]['y'], c=c[i], marker='>', label='Journey: %s' % i)
 
 plt.scatter(sensor_coords['x'], sensor_coords['y'], marker='o', label='Sensors')
 plt.xlim([0, 3000]), plt.ylim([0, 1000])

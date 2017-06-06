@@ -31,6 +31,9 @@ def clean_ble(PATH, df):
     df['sensor'] = df['sensor'].map(map_sensors)
     # Map datetime strings to datetime # map(lambda x: x.replace(second=0))
     df['datetime'] = pd.to_datetime(df['datetime'])
+    df = df.dropna()
+    # Convert floats to ints
+    df['id_location'] = df['id_location'].astype(int)
     return df
 
 

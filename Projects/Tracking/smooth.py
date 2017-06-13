@@ -46,6 +46,7 @@ def f(x):
         return (x.reset_index().tail(1).values[0][1] - x.reset_index().loc[0].values[1]).seconds
 
 a = ble.groupby(['sensor', 'journey'])['datetime'].apply(f).reset_index().sort_values('journey').reset_index(drop=True)
+print np.unique(a[['sensor', 'next_sensor']])
 
 
 sensor_coords = pd.DataFrame(pd.read_csv(PATH.replace('BLE/Data', 'Location/', 1) + '/sensor_coords.txt',

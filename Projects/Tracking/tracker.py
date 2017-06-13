@@ -92,6 +92,9 @@ def points_to_tiles(points, size):
 
 # Compute list of possible tiles
 def f(x):
+    print sensor_coords[sensor_coords['sensor'] == [int(x[0])]]
+    print sensor_coords[sensor_coords['sensor'] == [int(x[0])]].values[0][2]
+    sys.exit()
     points = circum_points(x[1]*100,
                            sensor_coords[sensor_coords['sensor'] == [int(x[0])]].values[0][2],
                            sensor_coords[sensor_coords['sensor'] == [int(x[0])]].values[0][3],
@@ -100,6 +103,11 @@ def f(x):
 
 
 ble_round['poss_tiles'] = ble_round[['sensor', 'metres']].apply(f, axis=1)
+
+print ble_round
+
+
+sys.exit()
 
 def flatten(lis):
     for item in lis:
@@ -114,31 +122,23 @@ ble_round = ble_round.sort_values(['datetime', 'metres'])
 
 def g(x):
     sensors_active = len(x.reset_index())
-
     if sensors_active == 0:
         return x
-
     if sensors_active == 1:
         possible_tiles = list(flatten(x.reset_index().loc[0].values[1]))
         return choice(possible_tiles)
-
     if sensors_active == 2:
         sensor_1_tiles = list(flatten(x.reset_index().loc[0].values[1]))
         sensor_2_tiles = list(flatten(x.reset_index().loc[1].values[1]))
-
         possible_tiles = np.intersect1d(sensor_1_tiles, sensor_2_tiles)
-
         if len(possible_tiles) > 0:
             return choice(possible_tiles)
         else:
             return choice(sensor_1_tiles)
-
     if sensors_active > 2:
         sensor_1_tiles = list(flatten(x.reset_index().loc[0].values[1]))
         sensor_2_tiles = list(flatten(x.reset_index().loc[1].values[1]))
         sensor_3_tiles = list(flatten(x.reset_index().loc[2].values[1]))
-
-
         triangle = np.intersect1d(np.intersect1d(sensor_1_tiles, sensor_2_tiles), sensor_3_tiles)
         if len(triangle) > 0:
             return choice(triangle)
@@ -146,7 +146,6 @@ def g(x):
             pair_1 = np.intersect1d(sensor_1_tiles, sensor_2_tiles)
             pair_2 = np.intersect1d(sensor_1_tiles, sensor_3_tiles)
             pair_3 = np.intersect1d(sensor_2_tiles, sensor_3_tiles)
-
             return 200
 
 

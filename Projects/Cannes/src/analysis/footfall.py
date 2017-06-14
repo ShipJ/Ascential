@@ -8,7 +8,7 @@ PATH = get_path()
 
 
 ''' Grab raw data '''
-data = pd.DataFrame(pd.read_csv(PATH+'/Raw/AllDelegateTrakScanners.csv',
+data = pd.DataFrame(pd.read_csv(PATH+'/Raw/Footfall/AllDelegateTrakScanners.csv',
                                 usecols=['delegateid', 'package_description', 'delegate_JobRole', 'Bucket',
                                          'Country', 'SessionHost', 'Sessiondescription', 'Scanned']))
 

@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import triangulation as tr
 import visualise as vs
-import objects as ob
 
 from Code.config import get_pwd
 
@@ -52,15 +51,15 @@ def cleaned(path, df):
 
 
 def rssi_to_metres(df):
-    df['ratio'] = np.where(df['rssi'] >= 0, None, df.rssi*(1.0/df.power)) # Ignore runtime warnings
-    df['metres'] = np.where(df['ratio'] < 1, np.power(df['ratio'], 10), (0.89976)*np.power(df['ratio'], 7.7095) + 0.111)
+    df['ratio'] = np.where(df['rssi'] >= 0, None, df.rssi*(np.divide(1.0, df.power))) # Ignore runtime warnings
+    df['metres'] = np.where(df['ratio'] < 1, np.power(df['ratio'], 10), np.multiply(0.89976, np.power(df['ratio'], 7.7095) + 0.111))
     df['metres'] = pd.to_numeric(df['metres'])
     df = pd.DataFrame(df.drop(['ratio', 'power', 'accuracy', 'proximity', 'rssi'], axis=1))
     return df
 
 
 def near_only(df):
-    return df[df['metres'] < 5]
+    return df[df['metres'] < 3]
 
 
 def timestamped(df):
@@ -126,9 +125,9 @@ def event_map(path, delegate, query, arena, tiles, mapper):
     sensor_coords = get_sensor_coords(path, engineered_data)
 
     print 'Mapping User Journey...\n'
+    print engineered_data
     journey = tr.Triangulate(engineered_data, arena.tile_size, sensor_coords)
     journey_data = journey.triangulate()
-
 
     if not journey_data.empty:
         print 'Plotting Journeys...\n'

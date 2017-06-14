@@ -13,16 +13,19 @@ def main():
     delegate_ids = list(pd.read_csv('ids.csv').uuidmm) # List of delegate IDs
 
     print 'Constructing Arena...\n'
-    TILE_SIZE = 20
-    X_MIN, X_MAX = 0, 3000
-    Y_MIN, Y_MAX = 0, 1000
+    tile_size = 10
+    x_min, x_max = 0, 3000
+    y_min, y_max = 0, 1000
 
     # Construct event arena
-    arena = ob.EventArena(X_MIN, X_MAX, Y_MIN, Y_MAX, TILE_SIZE)
+    arena = ob.EventArena(x_min, x_max, y_min, y_max, tile_size)
     tiles = arena.enum_tiles()
     mapper = {i: (tiles[i].centre().x, tiles[i].centre().y) for i in range(len(tiles))}
 
-    for delegate in delegate_ids:
+    for i in range(1):
+        
+        # delegate in delegate_ids:
+        delegate = '699EBC80E1F311E39A0F0CF3EE3BC012:4/39182'
 
         # Ignore SQL syntax Warning
         query = "SELECT * FROM bettshowexcel2017.logs_beacons_nikos WHERE type = 'ble' AND measuredpower < 0" \

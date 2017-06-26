@@ -24,9 +24,10 @@ def cleaned(path, df):
     df.columns=['id', 'datetime', 'sensor', 'proximity', 'power', 'rssi', 'accuracy']
     # Merge with stand locations
     sensor_stand_loc = pd.merge(
-        pd.DataFrame(pd.read_csv(path.replace('BLE/Data', 'Location/', 1) + '/stand_locations.txt',
+
+        pd.DataFrame(pd.read_csv(path.replace('BLE', 'Location', 1) + '/stand_locations.txt',
                                  sep='\t')),
-        pd.DataFrame(pd.read_csv(path.replace('BLE/Data', 'Location/', 1) + '/sensor_locations.txt',
+        pd.DataFrame(pd.read_csv(path.replace('BLE', 'Location', 1) + '/sensor_locations.txt',
                                  sep='\t')),
         left_on='id',
         right_on='id_location').drop('id', axis=1)
@@ -59,7 +60,7 @@ def rssi_to_metres(df):
 
 
 def near_only(df):
-    return df[df['metres'] < 3]
+    return df[df['metres'] < 5]
 
 
 def timestamped(df):
@@ -83,7 +84,7 @@ def time_to_next(df):
 
 
 def get_sensor_coords(PATH, data):
-    sensor_coords = pd.DataFrame(pd.read_csv(PATH.replace('BLE/Data', 'Location/', 1) + '/sensor_coords.txt',
+    sensor_coords = pd.DataFrame(pd.read_csv(PATH.replace('BLE', 'Location/', 1) + '/sensor_coords.txt',
                                              sep='\t',
                                              usecols=['id_location', 'x', 'y']))
     name_loc = data[['sensor', 'id_location']].drop_duplicates().sort_values('sensor').reset_index(drop=True)

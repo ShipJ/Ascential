@@ -18,32 +18,34 @@ def read_redshift(pwd, query):
 
 
 def cleaned(path, df):
+
     # Remove unwanted columns
     df = df.drop(['clientmac', 'type', 'probetime_gmt', 'probetime'], axis=1)
     # Rename column headers
     df.columns=['id', 'datetime', 'sensor', 'proximity', 'power', 'rssi', 'accuracy']
+
     # Merge with stand locations
     sensor_stand_loc = pd.merge(
-
         pd.DataFrame(pd.read_csv(path.replace('BLE', 'Location', 1) + '/stand_locations.txt',
                                  sep='\t')),
         pd.DataFrame(pd.read_csv(path.replace('BLE', 'Location', 1) + '/sensor_locations.txt',
                                  sep='\t')),
-        left_on='id',
-        right_on='id_location').drop('id', axis=1)
+        left_on='id', right_on='id_location').drop('id', axis=1)
+
     # Merge with location data
     df = pd.DataFrame(pd.merge(df,
                                sensor_stand_loc,
                                left_on='sensor',
                                right_on='name',
                                how='outer').drop(['name', 'type'], axis=1))
-    # Map IDs to enumerated
+
+    # Enumerate IDs
     map_id = {id: i for i, id in enumerate(set(df['id']))}
     df['id'] = df['id'].map(map_id)
-    # # Map Sensors to enumerated
+    # Enumerate Sensors
     map_sensors = {sensor: i for i, sensor in enumerate(set(df['sensor']))}
     df['sensor'] = df['sensor'].map(map_sensors)
-    # Map datetime strings to datetime # map(lambda x: x.replace(second=0))
+    # Map datetime strings to datetime type
     df['datetime'] = pd.to_datetime(df['datetime'])
     df = df.dropna()
     # Convert floats to ints
@@ -52,9 +54,15 @@ def cleaned(path, df):
 
 
 def rssi_to_metres(df):
-    df['ratio'] = np.where(df['rssi'] >= 0, None, df.rssi*(np.divide(1.0, df.power))) # Ignore runtime warnings
-    df['metres'] = np.where(df['ratio'] < 1, np.power(df['ratio'], 10), np.multiply(0.89976, np.power(df['ratio'], 7.7095) + 0.111))
-    df['metres'] = pd.to_numeric(df['metres'])
+    """
+    This non-linear function takes an RSSI (relative signal strength) reading, and converts it to a distance (in metres)
+    :param df: 
+    :return: 
+    """
+    df['ratio'] = np.where(df['rssi'] >= 0, None, df.rssi*(np.divide(1.0, df.power)))
+    df['metres'] = pd.to_numeric(np.where(df['ratio'] < 1,
+                                          np.power(df['ratio'], 10),
+                                          np.multiply(0.89976, np.power(df['ratio'], 7.7095) + 0.111)))
     df = pd.DataFrame(df.drop(['ratio', 'power', 'accuracy', 'proximity', 'rssi'], axis=1))
     return df
 
@@ -94,10 +102,10 @@ def get_sensor_coords(PATH, data):
 def engineered(data):
     print '1. Converting RSSI to metres'
     rssi = rssi_to_metres(data)
-    print '2. Removing distant signals'
-    near = near_only(rssi)
+    # print '2. Removing distant signals'
+    # near = near_only(rssi)
     print '3. Filling missing minutes'
-    timestamp = timestamped(near)
+    timestamp = timestamped(rssi)
     print '4. Computing time difference\n'
     time_diff = time_to_next(timestamp)
     return time_diff
@@ -106,6 +114,8 @@ def engineered(data):
 def event_map(path, delegate, query, arena, tiles, mapper):
     print '____________________________'
     print '\nReading Data for Delegate: %s' % delegate
+
+    # Read data for specific delegate from redshift
     raw = read_redshift(get_pwd(), query)
 
     if raw.empty:
@@ -126,7 +136,6 @@ def event_map(path, delegate, query, arena, tiles, mapper):
     sensor_coords = get_sensor_coords(path, engineered_data)
 
     print 'Mapping User Journey...\n'
-    print engineered_data
     journey = tr.Triangulate(engineered_data, arena.tile_size, sensor_coords)
     journey_data = journey.triangulate()
 

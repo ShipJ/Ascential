@@ -4,14 +4,20 @@ import math
 from collections import Iterable, Counter
 from random import choice
 import objects as ob
-import sys
 
 
-# Return all points on the circumference of a circle with given centre-coordinates, and radius
-def circum_points(r, y, z, n):
-    points = [((math.cos(2*math.pi/n*x)*r+y), (math.sin(2*math.pi/n*x)*r)+z) for x in xrange(0, n+1)]
-    points = [i for i in points if i[0]>0 and i[0]<3000]
-    return [j for j in points if j[1]>0 and j[1]<1000]
+def circum_points(r, x, y, n):
+    """
+    # Return coords on the circumference of a circle with given centre-coords and radius
+    :param r: float - radius of the circle in metres
+    :param x: 
+    :param y: 
+    :param n: number of points to return
+    :return: 
+    """
+    points = [((math.cos(2*math.pi/n*i)*r+x), (math.sin(2*math.pi/n*i)*r)+y) for i in xrange(0, n+1)]
+    points = [i for i in points if 0. < i[0] < 3000 and 0. < i[1] < 1000]
+    return points
 
 
 def points_to_tiles(points, tile_size):
@@ -48,6 +54,7 @@ def flatten(lis):
                 yield x
         else:
             yield item
+
 
 def g(x):
     poss_tiles = flatten(list(x.values))

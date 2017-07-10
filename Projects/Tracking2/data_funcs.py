@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import triangulation as tr
 import visualise as vs
+import sys
 
 from Code.config import get_pwd
 
@@ -37,7 +38,7 @@ def cleaned(path, df):
                                sensor_stand_loc,
                                left_on='sensor',
                                right_on='name',
-                               how='outer').drop(['name', 'type'], axis=1))
+                               how='inner').drop(['name', 'type'], axis=1))
 
     # Enumerate IDs
     map_id = {id: i for i, id in enumerate(set(df['id']))}
@@ -47,7 +48,6 @@ def cleaned(path, df):
     df['sensor'] = df['sensor'].map(map_sensors)
     # Map datetime strings to datetime type
     df['datetime'] = pd.to_datetime(df['datetime'])
-    df = df.dropna()
     # Convert floats to ints
     df['id_location'] = df['id_location'].astype(int)
     return df
@@ -65,10 +65,6 @@ def rssi_to_metres(df):
                                           np.multiply(0.89976, np.power(df['ratio'], 7.7095) + 0.111)))
     df = pd.DataFrame(df.drop(['ratio', 'power', 'accuracy', 'proximity', 'rssi'], axis=1))
     return df
-
-
-def near_only(df):
-    return df[df['metres'] < 5]
 
 
 def timestamped(df):
@@ -102,8 +98,6 @@ def get_sensor_coords(PATH, data):
 def engineered(data):
     print '1. Converting RSSI to metres'
     rssi = rssi_to_metres(data)
-    # print '2. Removing distant signals'
-    # near = near_only(rssi)
     print '3. Filling missing minutes'
     timestamp = timestamped(rssi)
     print '4. Computing time difference\n'
@@ -111,38 +105,37 @@ def engineered(data):
     return time_diff
 
 
-def event_map(path, delegate, query, arena, tiles, mapper):
+def event_map(path, delegate, query, arena, mapper):
+
     print '____________________________'
-    print '\nReading Data for Delegate: %s' % delegate
 
-    # Read data for specific delegate from redshift
+    print 'Reading data for Delegate: %s...\n' % delegate
     raw = read_redshift(get_pwd(), query)
-
     if raw.empty:
-        print 'No beacon data exists for Delegate: %s' % delegate
+        print 'No beacon data exists for Delegate: %s\n' % delegate
         return None
-    else:
-        print 'Cleaning Data...'
-        clean_data = cleaned(path, raw)
 
-        if clean_data.empty:
-            print 'Data for Delegate: %s could not be cleaned' % delegate
-            return None
-        else:
-            print 'Engineering Data...'
-            engineered_data = engineered(clean_data)
+    print 'Cleaning data...\n'
+    clean = cleaned(path, raw)
+    if clean.empty:
+        print 'When cleaned, data for Delegate: %s did not produce adequate results\n' % delegate
+        return None
 
-    # Get coordinates of all beacons receiving delegate signal
-    sensor_coords = get_sensor_coords(path, engineered_data)
+    print 'Engineering Data...'
+    engineered_data = engineered(clean)
+    if engineered_data.empty:
+        print 'Not possible to engineer data usefully\n'
+        return None
 
     print 'Mapping User Journey...\n'
-    journey = tr.Triangulate(engineered_data, arena.tile_size, sensor_coords)
-    journey_data = journey.triangulate()
+    sensor_coords = get_sensor_coords(path, engineered_data)
+    journeys = tr.Triangulate(engineered_data, arena.tile_size, sensor_coords)
+    journey_paths = journeys.triangulate()
+    if journey_paths.empty:
+        print 'Not possible to construct user journeys from engineered data\n'
+        return None
 
-    if not journey_data.empty:
-        print 'Plotting Journeys...\n'
-        num_journeys = len(pd.unique(journey_data.journey))
-        tile_size = arena.tile_size
-        vs.visplot(journey_data, num_journeys, mapper, sensor_coords, tile_size)
-
+    print 'Plotting Journeys...\n'
+    num_journeys = len(pd.unique(journey_paths.journey))
+    vs.visplot(journey_paths, num_journeys, mapper, sensor_coords, arena.tile_size)
 

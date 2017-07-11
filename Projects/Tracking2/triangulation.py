@@ -4,6 +4,7 @@ import math
 from collections import Iterable, Counter
 from random import choice
 import objects as ob
+import sys
 
 
 def circum_points(r, x, y, n):
@@ -20,16 +21,16 @@ def circum_points(r, x, y, n):
     return points
 
 
-def points_to_tiles(points, tile_size):
+def points_to_tiles(points, size):
     """
-    Return all possible tiles in which a person could be based on the points given on the circle circumference
+    Return all possible tiles in which one could be, given points on the circle's circumference
     :param points: List of Point data structures
-    :param size: Set tile size
+    :param size: Tile size
     :return: 
     """
     tiles = []
     for point in points:
-        tiles.append(int((float(1000)/tile_size)*math.floor(point.x/float(tile_size)) + math.floor(point.y/float(tile_size))))
+        tiles.append(int((float(1000)/size)*math.floor(point.x/float(size)) + math.floor(point.y/float(size))))
     return tiles
 
 
@@ -37,7 +38,7 @@ def sensor_to_area(df, tile_size, sensor_coords):
     df = df.groupby(['sensor', 'timestamp', 'journey']).agg({'metres': np.mean, 'time_diff': sum}).reset_index().sort_values('timestamp').reset_index(drop=True)
     poss_tiles = []
     for index, row in df.iterrows():
-        r = row.metres
+        r = row.metres*100
         y = sensor_coords[sensor_coords['sensor'] == [int(row.sensor)]].values[0][2]
         z = sensor_coords[sensor_coords['sensor'] == [int(row.sensor)]].values[0][2]
         n = 50
@@ -47,9 +48,9 @@ def sensor_to_area(df, tile_size, sensor_coords):
     return df
 
 
-def flatten(lis):
-    for item in lis:
-        if isinstance(item, Iterable) and not isinstance(item, basestring):
+def flatten(a):
+    for item in a:
+        if isinstance(item, Iterable):
             for x in flatten(item):
                 yield x
         else:
@@ -57,8 +58,12 @@ def flatten(lis):
 
 
 def g(x):
+    print list(x.values)
     poss_tiles = flatten(list(x.values))
+    print poss_tiles
+    sys.exit()
     counts = Counter(poss_tiles)
+    print counts
     if len(counts.values()) == 0:
         return None
     else:
@@ -67,11 +72,31 @@ def g(x):
 
 
 def intersect(df):
+    print df
+    t = df['poss_tiles'].apply(lambda x: pd.Series(1, index=x))
+    t = t.fillna(0)  # Filled by 0
+
+    t['timestamp'] = df['timestamp']
+    t['journey'] = df['journey']
+
+    print t
+
+    sys.exit()
+
+    print Counter(t.ix[0])
+
+    # sum observations across days and transpose
+    # print t.groupby(['timestamp', 'journey']).sum().T
+
+
+
+    sys.exit()
+
     df = df.groupby(['timestamp', 'journey'])['poss_tiles'].apply(g).reset_index()
+    sys.exit()
     if len(df) > 2:
         return df
     else:
-        print 'It is not possible to construct a pathway for this delegate.'
         return pd.DataFrame()
 
 
@@ -80,7 +105,9 @@ class Triangulate:
         self.data = data
         self.tile_size = tile_size
         self.sensor_coords = sensor_coords
-
+        
     def triangulate(self):
         tile_path = sensor_to_area(self.data, self.tile_size, self.sensor_coords)
-        return intersect(tile_path)
+        sys.exit()
+        a = intersect(tile_path).dropna()
+        return a

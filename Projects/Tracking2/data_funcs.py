@@ -105,9 +105,9 @@ def engineered(data):
     return time_diff
 
 
-def event_map(path, delegate, query, arena, mapper):
+def event_map(path, delegate, query, arena, enum_tiles):
 
-    print '____________________________'
+    print '____________________________\n'
 
     print 'Reading data for Delegate: %s...\n' % delegate
     raw = read_redshift(get_pwd(), query)
@@ -130,12 +130,15 @@ def event_map(path, delegate, query, arena, mapper):
     print 'Mapping User Journey...\n'
     sensor_coords = get_sensor_coords(path, engineered_data)
     journeys = tr.Triangulate(engineered_data, arena.tile_size, sensor_coords)
-    journey_paths = journeys.triangulate()
-    if journey_paths.empty:
-        print 'Not possible to construct user journeys from engineered data\n'
-        return None
 
-    print 'Plotting Journeys...\n'
-    num_journeys = len(pd.unique(journey_paths.journey))
-    vs.visplot(journey_paths, num_journeys, mapper, sensor_coords, arena.tile_size)
+    journey_paths = journeys.triangulate()
+
+    # if journey_paths.empty:
+    #     print 'Not possible to construct user journeys from engineered data\n'
+    #     return None
+
+
+    # print 'Plotting Journeys...\n'
+    # num_journeys = len(pd.unique(journey_paths.journey))
+    # vs.vis_plot(journey_paths, num_journeys, enum_tiles, sensor_coords, arena.tile_size)
 

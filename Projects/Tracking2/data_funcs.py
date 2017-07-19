@@ -38,7 +38,7 @@ def cleaned(path, df):
                                sensor_stand_loc,
                                left_on='sensor',
                                right_on='name',
-                               how='inner').drop(['name', 'type'], axis=1))
+                               how='inner').drop(['name', 'type', 'id_sensor'], axis=1))
 
     # Enumerate IDs
     map_id = {id: i for i, id in enumerate(set(df['id']))}
@@ -127,11 +127,20 @@ def event_map(path, delegate, query, arena, enum_tiles):
         print 'Not possible to engineer data usefully\n'
         return None
 
-    print 'Mapping User Journey...\n'
-    sensor_coords = get_sensor_coords(path, engineered_data)
-    journeys = tr.Triangulate(engineered_data, arena.tile_size, sensor_coords)
+    print engineered_data
 
-    journey_paths = journeys.triangulate()
+
+
+    # print engineered_data.groupby(['sensor', 'timestamp', 'journey']).agg({'time_diff': sum, 'metres': np.mean}).reset_index().sort_values('timestamp')
+
+
+
+
+    # print 'Mapping User Journey...\n'
+    # sensor_coords = get_sensor_coords(path, engineered_data)
+    # journeys = tr.Triangulate(engineered_data, arena.tile_size, sensor_coords)
+
+    # journey_paths = journeys.triangulate()
 
     # if journey_paths.empty:
     #     print 'Not possible to construct user journeys from engineered data\n'

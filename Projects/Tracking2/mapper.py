@@ -23,7 +23,7 @@ def main():
     # Enumerate tiles
     enum_tiles = {i: (tiles[i].centre().x, tiles[i].centre().y) for i in range(len(tiles))}
 
-    for delegate in delegate_ids[12:]:
+    for delegate in delegate_ids:
 
         # Ignore syntax warning
         query = "SELECT * FROM bettshowexcel2017.logs_beacons_nikos WHERE type = 'ble' AND measuredpower < 0" \

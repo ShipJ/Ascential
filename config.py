@@ -32,6 +32,8 @@ def get_path():
         else:
             print "Project not recognised, please try again... \n"
             return get_path()
+    elif source == '4':
+        return root_path + '/Projects/M2020-Copenhagen/Data'
     else:
         print "Project not recognised, please try again... \n"
         return get_path()

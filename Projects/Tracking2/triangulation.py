@@ -5,6 +5,7 @@ from collections import Iterable, Counter
 from random import choice
 import objects as ob
 import sys
+pd.set_option('display.width', 320)
 
 
 def circum_points(r, x, y, n):
@@ -35,7 +36,7 @@ def points_to_tiles(points, size):
 
 
 def sensor_to_area(df, tile_size, sensor_coords):
-    df = df.groupby(['sensor', 'timestamp', 'journey']).agg({'metres': np.mean, 'time_diff': sum}).reset_index().sort_values('timestamp').reset_index(drop=True)
+    df = df.groupby(['sensor', 'timestamp']).agg({'metres': np.mean, 'time_diff': sum}).reset_index().sort_values('timestamp').reset_index(drop=True)
     poss_tiles = []
     for index, row in df.iterrows():
         r = row.metres*100
@@ -89,9 +90,6 @@ def intersect(df):
     # print t.groupby(['timestamp', 'journey']).sum().T
 
 
-
-    sys.exit()
-
     df = df.groupby(['timestamp', 'journey'])['poss_tiles'].apply(g).reset_index()
     sys.exit()
     if len(df) > 2:
@@ -108,6 +106,21 @@ class Triangulate:
         
     def triangulate(self):
         tile_path = sensor_to_area(self.data, self.tile_size, self.sensor_coords)
-        sys.exit()
+        print tile_path
+
         a = intersect(tile_path).dropna()
         return a
+
+
+
+    # journey_paths = journeys.triangulate()
+    # print journey_paths
+
+    # if journey_paths.empty:
+    #     print 'Not possible to construct user journeys from engineered data\n'
+    #     return None
+
+
+    # print 'Plotting Journeys...\n'
+    # num_journeys = len(pd.unique(journey_paths.journey))
+    # vs.vis_plot(journey_paths, num_journeys, enum_tiles, sensor_coords, arena.tile_size)

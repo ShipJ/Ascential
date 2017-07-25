@@ -1,7 +1,7 @@
 import pandas as pd
 import objects as ob
 from Code.config import get_path
-from data_funcs import event_map
+from event_map import density_map
 
 pd.set_option('display.width', 320)
 
@@ -30,7 +30,7 @@ def main():
                 " AND proximity = 'Near' AND uuidmm = ('%s')" % delegate
 
         # Create, analyse and plot an event map for each delegate
-        event_map(path, delegate, query, tile_size, arena, enum_tiles)
+        density_map(path, delegate, query, tile_size, arena, enum_tiles)
 
 
 if __name__ == '__main__':

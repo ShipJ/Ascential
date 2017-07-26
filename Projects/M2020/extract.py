@@ -18,7 +18,7 @@ def clean_attendance(df):
                 'Start Time', 'End Time', 'Type', 'Location', 'Group', 'Client Reference', 'Date', 'Email Address',
                 'Country', 'regRef2', 'Job Title']
     df = df.drop(['regRef', 'Enter Time', 'Exit Time', 'Company', 'Type', 'Group',
-                  'Client Reference', 'Date', 'Country', 'regRef2', 'Job Title'], axis=1)
+                   'Date', 'Country', 'Job Title'], axis=1)
     return df
 
 
@@ -32,7 +32,9 @@ def main():
 
     data = pd.DataFrame(session_attendance.merge(attendee_list, how='inner', on=['First Name', 'Last Name', 'Email Address']))
 
-    data.to_csv(path+'/Cleaned/sessions.csv', index=None)
+    print len(pd.unique(data['Client Reference']))
+
+
 
 
 

@@ -4,13 +4,29 @@ pd.set_option('display.width', 320)
 from pylab import *
 
 def read_redshift(pwd, query):
-    conn = ps.connect(
-        host='redshift-clustor.cndr1rlsl2px.eu-west-1.redshift.amazonaws.com',
-        user='root',
-        port=5439,
-        password=pwd,
-        dbname='autumnfair')
-    return pd.read_sql_query(query, conn).dropna()
+    print 'Which data do you want?:\nBett: [1]\nCannes: [2]\n'
+    source = raw_input()
+
+    if source == '1':
+        conn = ps.connect(
+            host='redshift-clustor.cndr1rlsl2px.eu-west-1.redshift.amazonaws.com',
+            user='root',
+            port=5439,
+            password=pwd,
+            dbname='autumnfair')
+        return pd.read_sql_query(query, conn).dropna()
+    elif source == '2':
+        conn = ps.connect(
+            host='redshift-clustor.cndr1rlsl2px.eu-west-1.redshift.amazonaws.com',
+            user='root',
+            port=5439,
+            password=pwd,
+            dbname='cannes2017')
+        return pd.read_sql_query(query, conn).dropna()
+    else:
+        print "Project not recognised, please try again... \n"
+        return read_redshift(pwd, query)
+
 
 
 def cleaned(path, df):

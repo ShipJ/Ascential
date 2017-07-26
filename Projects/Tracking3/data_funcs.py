@@ -110,4 +110,5 @@ def engineered(data):
     time_diff['activity'] = activity
     b = time_diff.groupby(['id', 'sensor', 'id_location', 'activity', 'journey']).agg(
         {'metres': np.mean, 'time_diff': sum}).reset_index().sort_values(['journey', 'activity']).reset_index(drop=True)
+    b = b.drop(['id', 'activity'], axis=1)
     return b

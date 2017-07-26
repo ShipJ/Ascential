@@ -13,7 +13,7 @@ def main():
 
     # Set arena size and tile size (granularity) manually
     print 'Constructing Arena...\n'
-    tile_size = 100
+    tile_size = 25
     x_min, x_max = 0, 3000
     y_min, y_max = 0, 1000
 
@@ -30,7 +30,7 @@ def main():
                 " AND proximity = 'Near' AND uuidmm = ('%s')" % delegate
 
         # Create, analyse and plot an event map for each delegate
-        density_map(path, delegate, query, tile_size, arena, enum_tiles)
+        density_map(path, delegate, query, tile_size)
 
 
 if __name__ == '__main__':

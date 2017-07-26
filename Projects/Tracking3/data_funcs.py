@@ -21,7 +21,7 @@ def read_redshift(pwd, query):
             user='root',
             port=5439,
             password=pwd,
-            dbname='cannes2017')
+            dbname='dbname')
         return pd.read_sql_query(query, conn).dropna()
     else:
         print "Project not recognised, please try again... \n"

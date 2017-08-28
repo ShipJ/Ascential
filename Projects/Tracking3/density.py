@@ -33,6 +33,22 @@ def points_to_tiles(points, size):
         tiles.append(int((float(1000) / size) * math.floor(point.x / float(size)) + math.floor(point.y / float(size))))
     return tiles
 
+def tiles_to_points(tiles, size):
+    """
+    Return the centre coordinates of a tile, given its enumerated value
+    :param tiles: List of tiles in need of computing their centres
+    :param size: The width/height of tile squares defined at the start
+    :return: A list of centre coordinates of each tile
+    """
+    points = []
+    for i in range(len(tiles)):
+        x = int((np.floor(tiles[i] / (1000./size)) * size) + (size/2.))
+        y = int((np.mod(tiles[i], (1000./size)) * size) + (size/2.))
+        points.append(ob.Point(x, y))
+    return points
+
+
+
 
 def sensor_to_area(df, tile_size, sensor_coords):
     df = df.groupby(['sensor', 'timestamp']).agg({'metres': np.mean, 'time_diff': sum}).reset_index().sort_values(

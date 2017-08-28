@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import sys
 import matplotlib.pyplot as plt
 plt.rcParams['figure.facecolor']='white'
 from Code.config import get_path
@@ -83,12 +84,21 @@ if __name__ == '__main__':
 
     # Get path to data
     PATH = get_path()
+    print PATH
 
-    # # Grab raw data
-    # headers = pd.DataFrame(pd.read_csv(PATH+'/Raw/headers.csv'))
-    # data = pd.DataFrame(pd.read_csv(PATH+'/Raw/Spring_Autumn.txt', sep='\t', names=headers, low_memory=False))
-    # # Clean data and store in csv
-    # clean(data).to_csv(PATH+'/Processed/cleanedSpringAutumn.csv', index=None)
+    # Grab raw data
+    headers = pd.DataFrame(pd.read_csv(PATH+'/Foo/Raw/headers.csv'))
+    data = pd.DataFrame(pd.read_csv(PATH+'/Footfall/Data/Raw/Spring_Autumn.txt', sep='\t', names=headers, low_memory=False))
+    # Clean data and store in csv
+    print clean(data)
+
+
+
+
+
+
+
+    sys.exit()
 
     # Grab processed data
     data = pd.DataFrame(pd.read_csv(PATH+'/Processed/cleanedSpringAutumn.csv', low_memory=False))

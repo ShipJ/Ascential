@@ -14,16 +14,8 @@ def main():
     # Set arena size and tile size (granularity) manually
     print 'Constructing Arena...\n'
     tile_size = 25
-    x_min, x_max = 0, 3000
-    y_min, y_max = 0, 1000
 
-    # Construct event arena with variables above
-    arena = ob.EventArena(x_min, x_max, y_min, y_max, tile_size)
-    tiles = arena.enum_tiles()
-    # Enumerate tiles
-    enum_tiles = {i: (tiles[i].centre().x, tiles[i].centre().y) for i in range(len(tiles))}
-
-    for delegate in delegate_ids[11:]:
+    for delegate in delegate_ids[300:]:
 
         # Ignore syntax warning
         query = "SELECT * FROM bettshowexcel2017.logs_beacons_nikos WHERE type = 'ble' AND measuredpower < 0" \

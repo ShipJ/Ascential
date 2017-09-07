@@ -84,15 +84,14 @@ if __name__ == '__main__':
 
     # Get path to data
     PATH = get_path()
-    print PATH
 
     # Grab raw data
-    headers = pd.DataFrame(pd.read_csv(PATH+'/Foo/Raw/headers.csv'))
+    headers = pd.DataFrame(pd.read_csv(PATH+'/Footfall/Data/Raw/headers.csv'))
     data = pd.DataFrame(pd.read_csv(PATH+'/Footfall/Data/Raw/Spring_Autumn.txt', sep='\t', names=headers, low_memory=False))
     # Clean data and store in csv
     print clean(data)
 
-
+    clean(data).to_csv('/Users/JackShipway/Desktop/SAFair.csv', index=None)
 
 
 

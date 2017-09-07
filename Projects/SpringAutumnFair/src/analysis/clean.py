@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import sys
 
 
 def clean(df):
@@ -15,7 +16,7 @@ def clean(df):
     df.replace(empty_nan_map, inplace=True)
 
     # Drop unwanted headers
-    df = pd.DataFrame(df.drop(['RegisteredCompany', 'OpportunityId', 'CreditStatus', 'CompanyTelephone', 'BillingCity',
+    df = pd.DataFrame(df.drop(['RegisteredCompany', 'OpportunityId', 'CreditStatus', 'CompanyTelephone', 'ShowSector',
                                'BillingPostalCode', 'BillingState', 'VATNumber', 'VATNumberValidationStatus', 'Website',
                                'CurrencyIsoCode', 'IsWon', 'InvoiceFrequency', 'LeadChannel', 'LeadSource',
                                'ProductDescription', 'ReasonLost', 'OtherReasonsLost', 'OtherCustomerObjectives',
@@ -23,13 +24,16 @@ def clean(df):
 
     # Exhibitions: map 'Spring Fair International 2017' -> Spring17
     fairs = []
+    years = []
     for i in range(len(df)):
-        fairs.append(df['Exhibition'][i].split(' ', 1)[0] + df['Exhibition'][i].split(' ')[3][2:])
+        fairs.append(df['Exhibition'][i].split(' ', 1)[0])
+        years.append(df['Exhibition'][i].split(' ')[3][2:])
     df['Exhibition'] = fairs
+    df['Year'] = years
 
     # Company Sectors: strip redundant values, repeat entries, mistake entries, combine 3 cols to 1 col
     words, results = [], []
-    stopwords = np.unique(np.loadtxt('/Users/JackShipway/Desktop/Ascential/WRC/list.txt', dtype=np.str, delimiter=', '))
+    stopwords = ['and', '&', 'the']
     for i in range(len(df)):
         query1, query2, query3 = df['CompanySector'][i], df['CompanySector2'][i], df['CompanySector3'][i]
         queries = list()
@@ -44,10 +48,20 @@ def clean(df):
         if queries == None:
             result = None
         else:
-            result = pd.unique(list([word for word in queries if word.lower() in stopwords]))
+            result = list([word for word in queries if word.lower() not in stopwords])
+            mapping = [("Children\xe2\x80\x99s", 'Children\'s Gifts'), ('Gifts,', ''), ('Children?s', 'Children\'s Gifts'),
+                       ('Fashion,', 'Fashion'), ('Jewellery,', 'Jewellery'), ('Volume,', 'Volume'), ('Kitchen,', 'Kitchen'),
+                       ('Multiple, /', ''), ('Department', 'Department Store'), ('Stores', ''), ('retailer', 'Retail'),
+                       ('/', ''), ('Multiple', ''), (' ', '')]
+            for k, v in mapping:
+                result = [i.replace(k, v) for i in result]
+            if '' in result: result.remove('')
+            result = pd.unique(result)
+
         results.append(result)
     df = pd.DataFrame(df.drop(['CompanySector', 'CompanySector2', 'CompanySector3'], axis=1))
     df['CompanySectors'] = results
+
 
     # Replace unknown with None
     exhibitorTypeMap = {'Unknown': None}
@@ -73,16 +87,13 @@ def clean(df):
                'Spring Fair International 2016 - Halls 6&7': [6, 7], 'Spring Fair International 2016 Halls 6 & 7': [6, 7]}
     df['Hall'].replace(hallMap, inplace=True)
 
+    cityMap = {'.': '', 'X': '', 'Tbc': '', 'Oxon': 'Oxford', 'Girona 17469': 'Girona', 'Ny': 'New York'}
+    df['BillingCity'].replace(cityMap, inplace=True)
+
     # Some stage names map to the same value
-    StageNameMap = {'': None, 'Adv. Commercial Negotiation': 1,
-                    'At Risk': 2, 'Close Lost': 3, 'Closed Lost': 3,
-                    'Closed Won': 4, 'Commercial Negotiation': 1,
-                    'Contract Execution': 5, 'Discovery': 6,
-                    'Final Agreement': 7, 'Rebook Ready': 8,
-                    'Solution Development': 9}
+    StageNameMap = {'': None, 'Adv. Commercial Negotiation': 'Commercial Negotiation', 'Close Lost': 'Closed Lost'}
     df['StageName'].replace(StageNameMap, inplace=True)
 
     # Some dates incorrectly labelled, must be greater than 0
     df = df[df['CreateCloseDateDiff'] >= 0]
-
     return df

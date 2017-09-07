@@ -30,7 +30,7 @@ def get_path():
             return get_path()
         return root_path+'/Projects/Cannes/Data'
     elif source == '2':
-        return root_path+'/Projects/SpringAutumnFair/Data'
+        return root_path+'/Projects/SpringAutumnFair'
     elif source == '3':
         print 'Which tracking data?:\nWiFi: [1]\nBLE: [2]\n'
         wifi_or_ble = raw_input()

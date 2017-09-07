@@ -43,7 +43,15 @@ def get_path():
     elif source == '4':
         return root_path + '/Projects/M2020/Europe/Data'
     elif source == '5':
-        return root_path + '/Projects/RFM'
+        print 'Which Project?:\nWGSN: [1]\nOther: [2]'
+        project = raw_input()
+        if project == '1':
+            return root_path + '/Projects/RFM/WGSN'
+        elif project == '2':
+            return root_path + '/Projects/RFM/Other'
+        else:
+            print "Project not recognised, please try again... \n"
+            return get_path()
     else:
         print "Project not recognised, please try again... \n"
         return get_path()

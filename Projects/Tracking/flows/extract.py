@@ -1,10 +1,8 @@
-import sys
 import pandas as pd
 
-import matplotlib.pyplot as plt
-
+from Code.Projects.Tracking.Tracking3 import read_redshift
 from Code.config import get_path, get_pwd
-from Code.Projects.Tracking3.data_funcs import read_redshift
+
 pd.set_option('display.width', 320)
 
 

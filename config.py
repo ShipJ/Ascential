@@ -15,7 +15,7 @@ def get_path():
 
     root_path = os.path.dirname(os.path.abspath(__file__ + '../../'))
 
-    print 'Which data do you want?:\nCannes: [1]\nSpring Fair: [2]\nTracking: [3]\nM2020Europe: [4]\n'
+    print 'Which data do you want?:\nCannes: [1]\nSpring Fair: [2]\nTracking: [3]\nM2020Europe: [4]\nRFM: [5]\n'
     source = raw_input()
 
     if source == '1':

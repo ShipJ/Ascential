@@ -23,12 +23,11 @@ def get_path():
         project = raw_input()
         if project == '1':
             return root_path + '/Projects/Tracking/WiFi'
-        elif wifi_or_ble == '2':
+        elif project == '2':
             return root_path + '/Projects/Tracking/BLE'
         else:
             print "Project not recognised, please try again... \n"
             return get_path()
-        return root_path+'/Projects/Cannes/Data'
     elif source == '2':
         return root_path+'/Projects/SpringAutumnFair'
     elif source == '3':
@@ -43,6 +42,8 @@ def get_path():
             return get_path()
     elif source == '4':
         return root_path + '/Projects/M2020/Europe/Data'
+    elif source == '5':
+        return root_path + '/Projects/RFM'
     else:
         print "Project not recognised, please try again... \n"
         return get_path()

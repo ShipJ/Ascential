@@ -41,7 +41,20 @@ def get_path():
             print "Project not recognised, please try again... \n"
             return get_path()
     elif source == '4':
-        return root_path + '/Projects/M2020/Europe/Data'
+        print 'Which Event?:\nEurope: [1]\nUSA: [2]\n'
+        event = raw_input()
+        if event == '1':
+            print 'Which One?:\nCopenhagen: [1]\nAmsterdam: [2]\n'
+            one = raw_input()
+            if one == 1:
+                return root_path + '/Projects/M2020/Europe/Copenhagen'
+            elif one == 2:
+                return root_path + '/Projects/M2020/Europe/Amsterdam'
+        elif event == 2:
+            return root_path + '/Projects/M2020/USA'
+        else:
+            print "Project not recognised, please try again... \n"
+            return get_path()
     elif source == '5':
         print 'Which Project?:\nWGSN: [1]\nOther: [2]'
         project = raw_input()

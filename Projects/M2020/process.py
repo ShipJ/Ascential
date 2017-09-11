@@ -9,10 +9,20 @@ pd.set_option('display.width', 500)
 
 def main():
 
-    preprints = pd.DataFrame(pd.read_csv('/Users/JackShipway/Desktop/preprints.csv'))
+    path = get_path()
+    print path
 
+    dels = pd.DataFrame(pd.read_csv(path+'/Copenhagen/Footfall/Data/Cleaned/delegates2.csv'))
+    seg = pd.DataFrame(pd.read_csv('/Copenhagen/Footfall/Data/Cleaned/segmentation2.csv'))
+    revenue = pd.DataFrame(pd.read_csv('/Copenhagen/Footfall/Data/Cleaned/revenue.csv'))
+    sessions = pd.DataFrame(pd.read_csv('/Copenhagen/Footfall/Data/Cleaned/sessions2.csv'))
+    bookings = pd.DataFrame(pd.read_csv('/Copenhagen/Footfall/Data/Cleaned/bookings.csv'))
+    speakers = pd.DataFrame(pd.read_csv('/Copenhagen/Footfall/Data/Cleaned/speakers.csv'))
+    seminars = pd.DataFrame(pd.read_csv('/Copenhagen/Footfall/Data/Cleaned/seminars.csv'))
 
-    print preprints
+    print dels
+    print sessions
+
 
 
     sys.exit()

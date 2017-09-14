@@ -8,7 +8,7 @@ from Code.config import get_path
 
 
 def get_raw(path):
-    raw = pd.DataFrame(pd.read_csv(path + '/Data/Raw/GoogleWGSN.csv'))
+    raw = pd.DataFrame(pd.read_csv(path + '/Data/Raw/GoogleWGSN2.csv'))
     return raw
 
 
@@ -53,13 +53,22 @@ def analysis(df):
 
 
 def recency(df):
-    df['diff'] = df['visitstarttime'] - min(df['visitstarttime'])
-    diff = max(df['visitstarttime']) - min(df['visitstarttime'])
-    band = diff / 5
-    df['recency'] = df['diff'] / band
-    df['recency'] = df['recency'].round()
-    return df
+    a = df.groupby(['fullVisitorId']).agg({'visitstarttime': max, 'visitId': len}).reset_index()
 
+    most_recent = max(df['visitstarttime'])
+    least_recent = min(df['visitstarttime'])
+    recent_diff = (most_recent-least_recent)/5
+    a['visitstarttime'] = ((a['visitstarttime']-least_recent)/recent_diff)
+    a['visitstarttime'] = a['visitstarttime'].round().astype(int)
+
+    most_frequent = max(a['visitId'])
+    least_frequent = min(a['visitId'])
+
+    frequent_diff = (most_frequent - least_frequent) / 5
+    a['visitId'] = ((a['visitId']-least_frequent)/frequent_diff)
+    a['visitId'] = a['visitId'].round().astype(int)
+    a.columns=['Visitor ID', 'Frequency', 'Recency']
+    return a
 
 def frequency(df):
 
@@ -69,6 +78,8 @@ def main():
     path = get_path()
     data = get_raw(path)
     recent = recency(data)
+    print recent
+    sys.exit()
     analysis(recent)
 
 

@@ -46,11 +46,14 @@ def get_path():
         if event == '1':
             print 'Which One?:\nCopenhagen: [1]\nAmsterdam: [2]\n'
             one = raw_input()
-            if one == 1:
+            if one == '1':
                 return root_path + '/Projects/M2020/Europe/Copenhagen'
-            elif one == 2:
+            elif one == '2':
                 return root_path + '/Projects/M2020/Europe/Amsterdam'
-        elif event == 2:
+            else:
+                print "Project not recognised, please try again... \n"
+                return get_path()
+        elif event == '2':
             return root_path + '/Projects/M2020/USA'
         else:
             print "Project not recognised, please try again... \n"
